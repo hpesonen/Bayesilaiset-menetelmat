@@ -16,18 +16,48 @@ knitr::opts_chunk$set(echo = FALSE)
     - Uskottavuusfunktio
     - Priorijakauma
     - Posteriorijakauma
-- Stan
+- Bayesilaiset menetelmät käytännössä
 
 ## Bayesilainen tilastotiede
 
-$x + y^2$
+- Bayesiläisen tilastotieteen keskiössä on maailman mallittaminen
+- Bayesilainen tilastotiede mallittaa todennäköisyyden epävarmuutena todellisuudesta
+    - Epävarmuus on subjektiivinen käsite
+    - Maailman havannointi lisää informaatiota ja vähentää epävarmuutta
+- Informaation lisäämisen mekanismi ilmaistaan Bayesin teoreeman avulla
+
+$$p(\theta \mid y) = \frac{p(y \mid \theta)p(\theta)}{p(y)}$$
+
+## Bayesin teoreema
+
+$$p(\theta \mid y) = \frac{p(y \mid \theta)p(\theta)}{p(y)}$$
+
+- $\theta$: Mallin parametrit
+- $y$: Data
+- $p(\theta \mid y)$: Posteriorijakauma
+- $p(y \mid \theta)$: Uskottavuusfunktio
+- $p(\theta)$: Priorijakauma
+- $p(y)$: Evidenssi/Marginaali
 
 $p(\theta \mid \text{Data, Malli, Priori})$
 
 ## Slide with R Output
 
+```{r  include=FALSE}
+
+library('rstan')
+options(mc.cores = parallel::detectCores())
+rstan_options(auto_write = TRUE)
+
+```
+## 
 ```{r cars, echo = TRUE}
 summary(cars)
+
+theta = seq(-3,3,length.out = 100)
+plot(dnorm(theta,0,1))
+# data_frame()
+
 ```
 
 ## Slide with Plot
