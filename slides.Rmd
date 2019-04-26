@@ -27,6 +27,9 @@ library('cowplot')
     - Uskottavuusfunktio
     - Priorijakauma
     - Posteriorijakauma
+- Todennäköisyysväli
+- Mallien vertailu
+- Prediktiiviset jakaumat
 - Bayesilaiset menetelmät käytännössä
 - **Kalvot löytyvät osoitteesta github.com/hpesonen**
 
@@ -40,7 +43,7 @@ library('cowplot')
 - 0 ja 1 ovat skaalan kaksi ääripäätä ja vastaavat täyttä varmuutta tapahtumasta 
     - Epävarmuus on subjektiivinen käsite
     - **Maailman havannointi lisää informaatiota todellisuudesta ja vähentää epävarmuutta**
-- Bayesin teoreeman käyttö ei tee kenestäkään Bayesilaista, mutta epävarmuuden ilmaiseminen todennäköisyyden avulla tekee
+
 
 
 
@@ -61,7 +64,7 @@ library('cowplot')
     - Bayesin teoreema on siis **työkalu**, jota käytetään Bayesilaisessä analyysissä
 
 $$p(\theta \mid y) = \frac{p(y \mid \theta)p(\theta)}{p(y)}$$
-
+- Bayesin teoreeman käyttö ei tee kenestäkään Bayesilaista, mutta epävarmuuden ilmaiseminen todennäköisyyden avulla tekee
 
 
 
@@ -72,9 +75,9 @@ $$p(\theta \mid y) = \frac{p(y \mid \theta)p(\theta)}{p(y)}$$
 - $\theta$: Mallin parametrit
 - $y$: Data
 - $p(\theta \mid y)$: Posteriorijakauma
-- $p(y \mid \theta)$: Uskottavuusfunktio
-- $p(\theta)$: Priorijakauma
-- $p(y)$: Evidenssi/Marginaali
+- $p(y \mid \theta)$: Uskottavuusfunktio (Havaintomalli)
+- $p(\theta)$: Priorijakauma (Mitä havaintomallin arvot ovat realistisia)
+- $p(y)$: Evidenssi/Marginaali/Prioriprediktiivinen jakauma
 
 
 
@@ -110,14 +113,14 @@ $$p(y_1, \ldots, y_N \mid \theta) = \prod_{i=1}^N p(y_i \mid \theta) = \theta^{\
     - Minkälainen priorijakauma vastaisi epävarmuuttamme klaavan esiintymisestä?
 
 ```{r, fig.height = 3, fig.width = 8}
-p <- seq(0,1,length.out = 100)
-coin_toss_prior <- bind_rows(tibble(p = p, y = dbeta(p,1,1), locx = 1, locy = 1),
-                       tibble(p = p, y = dbeta(p,0.5,0.5), locx = 2, locy = 1),
-                       tibble(p = p, y = dbeta(p,5,5), locx = 3, locy = 1),
-                       tibble(p = p, y = dbeta(p,5,1), locx = 1, locy = 2),
-                       tibble(p = p, y = dbeta(p,1,5), locx = 2, locy = 2),
-                       tibble(p = p, y = dbeta(p,200,100), locx = 3, locy = 2))
-ggplot(coin_toss_prior, aes(x = p, y = y)) + 
+theta <- seq(0,1,length.out = 100)
+coin_toss_prior <- bind_rows(tibble(theta = theta, y = dbeta(theta,1,1), locx = 1, locy = 1),
+                       tibble(theta = theta, y = dbeta(theta,0.5,0.5), locx = 2, locy = 1),
+                       tibble(theta = theta, y = dbeta(theta,5,5), locx = 3, locy = 1),
+                       tibble(theta = theta, y = dbeta(theta,5,1), locx = 1, locy = 2),
+                       tibble(theta = theta, y = dbeta(theta,1,5), locx = 2, locy = 2),
+                       tibble(theta = theta, y = dbeta(theta,200,100), locx = 3, locy = 2))
+ggplot(coin_toss_prior, aes(x = theta, y = y)) + 
   geom_line() +
   facet_wrap(locy ~ locx) + theme_light() + 
   theme(strip.background = element_blank(),
@@ -135,7 +138,7 @@ ggplot(coin_toss_prior, aes(x = p, y = y)) +
 - Mallinnamme prioritietämystä jakaumalla $p(\theta) \propto \theta^4(1-\theta)^4$ ($\mathsf{Beta}(5,5)$-jakauma)
 
 ```{r, fig.height = 2, fig.width = 4}
-coin_toss_prior %>% filter(locx == 3, locy == 1) %>% ggplot(aes(x = p, y = y)) + 
+coin_toss_prior %>% filter(locx == 3, locy == 1) %>% ggplot(aes(x = theta, y = y)) + 
   geom_line() +
   facet_wrap(locy ~ locx) + theme_light() + 
   theme(strip.background = element_blank(),
@@ -151,7 +154,7 @@ coin_toss_prior %>% filter(locx == 3, locy == 1) %>% ggplot(aes(x = p, y = y)) +
 - Tarkastellaan miten posteriorijakauma muuttuu heittosarjan koon kasvaessa
 - Merkitään dataa $y = (n,N-n)$ :
   - Esim. $y = (10,5)$ vastaa $15$ heiton sarjaa, joista $10$ klaavaa ja $5$ kruunaa
-- Tässä tapauksessa posteriori-jakauma voidaan ilmaista analyyttisesti
+- Tässä tapauksessa posteriorijakauma voidaan ilmaista analyyttisesti
 
 $$ 
 \begin{aligned}
@@ -165,8 +168,8 @@ $$
 
 ## Esimerkki - Kolikonheitto
 
-- Havaintojen määrän kasvaessa posteriori-jakauma lähestyy uskottavuusfunktiota
-    - Priori-todennäköisyyden merkitys vähenee
+- Havaintojen määrän kasvaessa posteriorijakauma lähestyy uskottavuusfunktiota
+    - Prioritodennäköisyyden merkitys vähenee
 
 ```{r, fig.height = 3, fig.width = 8}
 theta <- seq(0,1,length.out = 300)
@@ -200,17 +203,10 @@ ggplot(coin_toss, aes(x = theta, y = y)) +
 
 
 
-
-## Esimerkki - Kolikonheitto
-
-- Tulkitaan posteriorijakauma
-
-
-
-
 ## Todennäköisyysväli
 
 - Frekventistisen tilastotieteen luottamusväliä vastaava käsite Bayesilaisessa tilastotieteessa on **todennäköisyysväli**
+- Ero frekventistiseen luottamusväliin on, että Bayesilaisen tulkinnan mukaisesti parametrin arvo kuuluu $\alpha$-todennäköisyysväliin todennäköisyydellä $\alpha$
 - Määritelmän mukaisesti $\alpha$-todennäkäisyysväli (yleisemmin todennäköisyysalue) on mikä tahansa parametrijoukko, joka sisältää $\alpha$ todennäköisyyttä
 $$p(\theta \in \Theta \mid x) = \alpha$$
 - Käytännössä kyse on integraalista (tai summasta diskreetin satunnaismuuttujan tapauksessa)
@@ -256,22 +252,18 @@ coin_toss %>% filter(type == "posterior") %>% ggplot(aes(x = theta, y = y)) +
 
 
 
-## Todennäköisyysväli
-
-- Ero frekventistiseen luottamusväliin on, että Bayesilaisen tulkinnan mukaisesti parametrin arvo kuuluu $\alpha$-todennäköisyysväliin todennäköisyydellä $\alpha$
-- 
-
 
 
 
 ## Mallien vertailu
 
 - Mallien vertailu tapahtuu mallien posterioritodennäköisyyden avulla
+    - Vastaa likimääräisesti klassista hypoteesin testausta
 - Jotta mallin $M_i$ todennäköisyys voidaan laskea, tarvitaan malleille prioritodennäköisyydet $p(M_i)$ kuten mille tahansa parametrille
 
 $$\sum_{i=1}^m p(M_i) = 1$$
 
-- Mallien posterioritodennäköisyydet ovat 
+- Mallien posterioritodennäköisyydet ovat todennäköisyyksiä ja summautuvat todennäköisyydeksi $1$
 
 $$\sum_{i=1}p(M_i \mid y) = 1$$
 
@@ -287,6 +279,12 @@ $$ p(M_i \mid y) = \frac{p(y \mid M_i) p(M_i)}{p(y)}  $$
 $$p(y \mid M_i) = \int p(y \mid \theta_i, M_i) ~ p(\theta_i \mid M_i) ~ \mathsf{d} \theta_i$$
 
 
+## Mallien vertailu
+
+- Mallien posterioritodennäköisyyksien suhde
+$$\frac{p(M_i \mid y)}{p(M_j \mid y)} = \frac{p(y \mid M_i)}{p(y \mid M_j)} \frac{p(M_i)}{p(M_j)}$$
+
+- $\frac{p(y \mid M_i)}{p(y \mid M_j)}$ on Bayesin faktori - mallittaa luonnollisesti Occamin partaterän efektiä
 
 
 
@@ -344,8 +342,8 @@ $$
 
 ## Bayesilainen analyysi käytännössä
 
-- Posteriori-jakauman laskeminen analyyttisessä muodossa onnistuu ainoastaan erikoistapauksissa
-- Käytännössä laskeminen tapahtuu muodostamalla otosparvi posteriorijakaumasta
+- Posteriorijakauman laskeminen analyyttisessä muodossa onnistuu ainoastaan erikoistapauksissa
+- Käytännössä laskeminen tapahtuu muodostamalla likimääräinen otosparvi posteriorijakaumasta
     - Importance sampling
     - Sequential Monte Carlo 
     - Markov Chain Monte Carlo
@@ -381,14 +379,14 @@ plot_grid(densityplot, sampleplot)
 
 ## Stan
 
-- Nykyisin otoksen muodostamiseen on yksinkertaista laajaltikäytettyjen ohjelmistojen ansiosta
+- Nykyisin otoksen muodostaminen on yksinkertaista laajaltikäytettyjen ohjelmistojen ansiosta
 - Suosituin ohjelmistoista on Stan
     - Stan 
         - PyStan
         - RStan
 - **rstanarm** : Bayesian applied regression modeling 
     - R:stä tuttu käyttöliittymä Bayesilaisesta analyysista kiinnostuneille 
-
+    - Hyvin alhainen käyttökynnys
 
 
 
@@ -396,11 +394,25 @@ plot_grid(densityplot, sampleplot)
 
 
 - Sovitetaan yksinkertainen lineaarinen regressiomalli, jolla mallitetaan 3-4-vuotiaiden lasten ÄO:ta äitien ÄO:n sekä äitien high school-tutkintoa ilmaisevalla indikaattorimuuttujalla 
+
+```{r, echo = FALSE, fig.height = 3, fig.width = 8}
+data(kidiq)
+kidiq$clr <- factor(kidiq$mom_hs, labels = c("No HS", "HS"))
+lgnd <- guide_legend(title = NULL)
+ggplot(kidiq, aes(x = mom_iq, fill = relevel(clr, ref = "HS"))) + 
+  geom_point(aes(y = kid_score), shape = 21, stroke = .2, size = 1) + 
+  guides(color = lgnd, fill = lgnd) + 
+  theme(legend.position = "right")
+```
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
 - rstanarm - koodi (oletusarvoisesti parametreille asetetaan normaalijakauma-priori)
 
 
 ```{r, echo=TRUE}
-data(kidiq)
+
 post1 <- stan_glm(kid_score ~ mom_hs, data = kidiq, 
                   family = gaussian(link = "identity"))
 post2 <- update(post1, formula = . ~ mom_iq)
@@ -449,7 +461,7 @@ base + geom_abline(intercept = coef(post1)[1], slope = coef(post1)[2],
 
 ## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
 
-- Ryhmäerojen posteriori-varianssia voidaan havainnollistaa generoimalla posteriorijakaumasta
+- Ryhmäerojen posteriorivarianssia voidaan havainnollistaa generoimalla posteriorijakaumasta
 - Malli post1:
 
 ```{r, echo = FALSE}
@@ -471,7 +483,7 @@ base +
 - Posteriorisovitteen vaihtelu
 - Malli post2:
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.height = 3, fig.width = 5}
 draws <- as.data.frame(as.matrix(post2))
 colnames(draws)[1:2] <- c("a", "b")
 ggplot(kidiq, aes(x = mom_iq, y = kid_score)) + 
@@ -522,7 +534,43 @@ base2 +
 ## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
 
 - Posteriorijakauman sovittamisen jälkeen kannattaa tarkastella havaintoaineiston jakaumaa, sekä posterioriprediktiivisestä jakaumasta generoitujen havaintoaineistojen jakaumia
-- Malli post4:
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Malli post1
+
+```{r}
+color_scheme_set("red")
+ppc_dens_overlay(y = post1$y,
+                 yrep = posterior_predict(post1, draws = 50))
+```
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Malli post2
+
+```{r}
+color_scheme_set("red")
+ppc_dens_overlay(y = post2$y,
+                 yrep = posterior_predict(post2, draws = 50))
+```
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Malli post3
+
+```{r}
+color_scheme_set("red")
+ppc_dens_overlay(y = post3$y,
+                 yrep = posterior_predict(post3, draws = 50))
+```
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Malli post4
 
 ```{r}
 color_scheme_set("red")
@@ -530,18 +578,14 @@ ppc_dens_overlay(y = post4$y,
                  yrep = posterior_predict(post4, draws = 50))
 ```
 
+<!-- ## rstanarm-esimerkki: Älykkyysosamäärän periytyminen -->
 
+<!-- - Posteriorijakauman sovittamisen jälkeen kannattaa tarkastella havaintoaineiston jakaumaa, sekä posterioriprediktiivisestä jakaumasta generoitujen havaintoaineistojen jakaumia -->
+<!-- - Malli post4: -->
 
-
-
-## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
-
-- Posteriorijakauman sovittamisen jälkeen kannattaa tarkastella havaintoaineiston jakaumaa, sekä posterioriprediktiivisestä jakaumasta generoitujen havaintoaineistojen jakaumia
-- Malli post4:
-
-```{r, echo = FALSE, message = FALSE, warning=FALSE}
-pp_check(post4, plotfun = "hist", nreps = 5)
-```
+<!-- ```{r, echo = FALSE, message = FALSE, warning=FALSE} -->
+<!-- pp_check(post4, plotfun = "hist", nreps = 5) -->
+<!-- ``` -->
 
 
 
@@ -549,7 +593,7 @@ pp_check(post4, plotfun = "hist", nreps = 5)
 
 - Havaintoaineistosta lasketun tunnusluvun jakauma verrattuna posterioriprediktiivisiin tunnuslukuihin
 
-```{r, echo = FALSE, message = FALSE, warning=FALSE}
+```{r, echo = FALSE, message = FALSE, warning=FALSE, fig.height = 3, fig.width = 5}
 pp_check(post4, plotfun = "stat", stat = "mean")
 ```
 
@@ -557,7 +601,7 @@ pp_check(post4, plotfun = "stat", stat = "mean")
 
 - Havaintoaineistosta laskettujen tunnuslukujen jakauma verrattuna posterioriprediktiivisiin tunnuslukuihin
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.height = 3, fig.width = 5}
 pp_check(post4, plotfun = "stat_2d", stat = c("mean", "sd"))
 ```
 
@@ -567,7 +611,8 @@ pp_check(post4, plotfun = "stat_2d", stat = c("mean", "sd"))
 - Mallien vertailu kannattaa suorittaa leave-one-out-ristiinvalidoinnilla
 
 ```{r, echo=TRUE}
-loo1 <- loo(post1); loo2 <- loo(post2); loo3 <- loo(post3); loo4 <- loo(post4)
+loo1 <- loo(post1); loo2 <- loo(post2); 
+loo3 <- loo(post3); loo4 <- loo(post4)
 (comp <- compare_models(loo1, loo2, loo3, loo4))
 ```
 
@@ -605,6 +650,14 @@ axis(1, at = 1:ncol(y_hs), labels = IQ_SEQ, las = 3)
 
 
 
+## Yhteenveto
+
+- Bayesilaisessa päättelyssä todennäköisyys mallitetaan epävarmuutena maailman tilasta
+    - Bayesian teoreema on työkalu prioritodennäköisyyksien päivittämiseen posterioritodennäköisyyksiksi
+- Bayesilaiset menetelmat ovat käyttökelpoisia hyvin monenlaisissa päättelyongelmissa
+    - Päättely perustuu posterioritodennäköisyyksiin
+- Suurin käyttökynnys johtuu likimääräisestä laskennasta
+    - Nykyisin ohjelmistot kuten Stan suorittavat laskennan automaattisesti
 
 
 
