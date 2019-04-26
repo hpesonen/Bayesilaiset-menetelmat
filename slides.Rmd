@@ -30,6 +30,9 @@ library('cowplot')
 - Bayesilaiset menetelmät käytännössä
 - **Kalvot löytyvät osoitteesta github.com/hpesonen**
 
+
+
+
 ## Todennäköisyys ja Bayesilainen tilastotiede
 
 - Bayesiläisen tilastotieteen keskiössä on maailman mallittaminen
@@ -39,11 +42,17 @@ library('cowplot')
     - **Maailman havannointi lisää informaatiota todellisuudesta ja vähentää epävarmuutta**
 - Bayesin teoreeman käyttö ei tee kenestäkään Bayesilaista, mutta epävarmuuden ilmaiseminen todennäköisyyden avulla tekee
 
+
+
+
 ## Todennäköisyys ja Bayesilainen tilastotiede
 
 - 0 ja 1 ovat skaalan kaksi ääripäätä ja vastaavat täyttä varmuutta tapahtumasta
 
 ![](figures/probability.png){width=80%}
+
+
+
 
 
 ## Todennäköisyys ja Bayesilainen tilastotiede
@@ -52,6 +61,9 @@ library('cowplot')
     - Bayesin teoreema on siis **työkalu**, jota käytetään Bayesilaisessä analyysissä
 
 $$p(\theta \mid y) = \frac{p(y \mid \theta)p(\theta)}{p(y)}$$
+
+
+
 
 ## Bayesin teoreema
 
@@ -66,6 +78,9 @@ $$p(\theta \mid y) = \frac{p(y \mid \theta)p(\theta)}{p(y)}$$
 
 
 
+
+
+
 ## Esimerkki - Kolikonheitto
 
 - Kolikonheitto on klassinen esimerkki informaation kertymisestä havaintoaineiston kasvaessa
@@ -77,11 +92,17 @@ $$p(\theta \mid y) = \frac{p(y \mid \theta)p(\theta)}{p(y)}$$
 
 $$p(y \mid \theta) = \theta^y(1-\theta)^{1-y}$$
 
+
+
+
 ## Esimerkki - Kolikonheitto
 
 - Toistettaessa riippumattomasti kolikonheitto-koetta $N$ kertaa uskottavuusfunktio voidaan ilmaista muodossa
 
 $$p(y_1, \ldots, y_N \mid \theta) = \prod_{i=1}^N p(y_i \mid \theta) = \theta^{\sum_{i} y_i} (1- \theta)^{N-\sum_{i}y_i} $$
+
+
+
 
 ## Esimerkki - Kolikonheitto
 
@@ -103,6 +124,9 @@ ggplot(coin_toss_prior, aes(x = p, y = y)) +
         strip.text.x = element_blank()
 )
 ```
+
+
+
 
 ## Esimerkki - kolikonheitto
 
@@ -135,6 +159,9 @@ p(\theta \mid y = (n,N-n)) & \propto p(y=(n,N-n) \mid \theta) p(\theta) \\
 & = \theta^{n}(1-\theta)^{N-n}\theta^4(1-\theta)^4 \\ & = \theta^{n+4}(1-\theta)^{N-n+4}
 \end{aligned}
 $$
+
+
+
 
 ## Esimerkki - Kolikonheitto
 
@@ -171,6 +198,9 @@ ggplot(coin_toss, aes(x = theta, y = y)) +
 ```
 
 
+
+
+
 ## Esimerkki - Kolikonheitto
 
 - Tulkitaan posteriorijakauma
@@ -185,6 +215,9 @@ ggplot(coin_toss, aes(x = theta, y = y)) +
 $$p(\theta \in \Theta \mid x) = \alpha$$
 - Käytännössä kyse on integraalista (tai summasta diskreetin satunnaismuuttujan tapauksessa)
 $$p(\theta \in \Theta \mid x) =  \int_\Theta p(\theta \mid x) ~\mathsf{d} \theta = \alpha$$
+
+
+
 
 
 ## Todennäköisyysväli
@@ -203,6 +236,9 @@ coin_toss %>% filter(type == "posterior" &  locx == 2 & locy == 1 ) %>% ggplot(a
 
 
 
+
+
+
 ## Esimerkki - Kolikonheittoesimerkin todennäköisyysväli
 
 - $0.95$-Todennäköisyysväli lyhenee havaintojen määrän kasvaessa
@@ -217,10 +253,16 @@ coin_toss %>% filter(type == "posterior") %>% ggplot(aes(x = theta, y = y)) +
         strip.text.x = element_blank())
 ```
 
+
+
+
 ## Todennäköisyysväli
 
 - Ero frekventistiseen luottamusväliin on, että Bayesilaisen tulkinnan mukaisesti parametrin arvo kuuluu $\alpha$-todennäköisyysväliin todennäköisyydellä $\alpha$
 - 
+
+
+
 
 ## Mallien vertailu
 
@@ -233,6 +275,9 @@ $$\sum_{i=1}^m p(M_i) = 1$$
 
 $$\sum_{i=1}p(M_i \mid y) = 1$$
 
+
+
+
 ## Mallien vertailu
 
 - Oletetaan, että mallin $M_i$ määrittää sen parametrit $\theta_i$
@@ -242,17 +287,26 @@ $$ p(M_i \mid y) = \frac{p(y \mid M_i) p(M_i)}{p(y)}  $$
 $$p(y \mid M_i) = \int p(y \mid \theta_i, M_i) ~ p(\theta_i \mid M_i) ~ \mathsf{d} \theta_i$$
 
 
+
+
+
 ## Mallien vertailu
 
 - Nykyisin käytetään usein mallien vertailuun posteriorijakauman laskemisen jälkeen Leave-one-out ristiinvalidointia
 - Laskettava suure on 
 $$\text{elpd}_\text{loo} = \sum_{i=1}^N \log p(y_i \mid y_{-i}) = \sum_{i=1}^N \log \int p(y_i \mid \theta)p(\theta \mid y_{-i}) \mathsf{d}\theta$$
 
+
+
+
 ## Prediktiiviset jakaumat
 
 - Suureen $\text{elpd}_\text{loo}$ laskemissa käytetään hyväksi prediktiivisiä jakaumia
 - Prediktiivisiä jakaumia voidaan yleisemminkin hyödyntää havaintomallien sekä priorijakaumien järkevyyden tarkasteluun
 - Nämä voidaan jakaa prioriprediktiivisiin sekä posterioriprediktiivisiin jakaumiin
+
+
+
 
 ## Prioriprediktiivinen jakauma
 
@@ -265,6 +319,9 @@ $$p(y) = \int p(y \mid \theta) p(\theta) \mathsf{d} \theta$$
 - Prioriprediktiivinen malli selventää parametrien priorijakauman vaikutusta havantoihin
     - Tuottavatko jotkut parametrikombinaatiot mahdottomia/hyvin epätodennäköisiä havaintoja?
     
+
+
+
 
 
 
@@ -282,6 +339,9 @@ $$
 - Posterioriprediktiivistä mallinnusta voidaan käyttää tarkastelemaan opittujen mallien järkevyyttä
 
 
+
+
+
 ## Bayesilainen analyysi käytännössä
 
 - Posteriori-jakauman laskeminen analyyttisessä muodossa onnistuu ainoastaan erikoistapauksissa
@@ -290,6 +350,9 @@ $$
     - Sequential Monte Carlo 
     - Markov Chain Monte Carlo
     - **Hamiltonian Monte Carlo**
+
+
+
 
 ## Otosparvi posteriorijakauman estimaattina
 
@@ -314,6 +377,8 @@ plot_grid(densityplot, sampleplot)
 
 
 
+
+
 ## Stan
 
 - Nykyisin otoksen muodostamiseen on yksinkertaista laajaltikäytettyjen ohjelmistojen ansiosta
@@ -324,18 +389,17 @@ plot_grid(densityplot, sampleplot)
 - **rstanarm** : Bayesian applied regression modeling 
     - R:stä tuttu käyttöliittymä Bayesilaisesta analyysista kiinnostuneille 
 
-## rstanarm-esimerkki
 
-- Data : kidiq
-- Muuttujat
-    - Lapsen ÄO
-    - Äidillä high school-tutkinto indikaattorimuuttuja
-    - Äidin ÄO
-    - Äidin ikä
 
-## rstanarm-esimerkki
 
-```{r, include=TRUE}
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+
+- Sovitetaan yksinkertainen lineaarinen regressiomalli, jolla mallitetaan 3-4-vuotiaiden lasten ÄO:ta äitien ÄO:n sekä äitien high school-tutkintoa ilmaisevalla indikaattorimuuttujalla 
+- rstanarm - koodi (oletusarvoisesti parametreille asetetaan normaalijakauma-priori)
+
+
+```{r, echo=TRUE}
 data(kidiq)
 post1 <- stan_glm(kid_score ~ mom_hs, data = kidiq, 
                   family = gaussian(link = "identity"))
@@ -346,25 +410,31 @@ posterior <- as.matrix(post4)
 
 ```
 
-## rstanarm-esimerkki
+
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Muuttujien posteriorimarginaalijakaumat
+
 ```{r, echo = FALSE, fig.height = 3, fig.width = 8}
-plot_title <- ggtitle("Posterior distributions",
-                      "with medians and 80% intervals")
+plot_title <- ggtitle("Posterior distributions with medians and 80% intervals")
 
 mcmc_areas(posterior,
            pars = c("mom_iq", "mom_hs:mom_iq","sigma"),
            prob = 0.8) + plot_title
 ```
 
-## Esimerkki
-```{r}
-color_scheme_set("red")
-ppc_dens_overlay(y = post4$y,
-                 yrep = posterior_predict(post4, draws = 50))
-```
 
 
-## Esimerkki 
+
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen 
+
+- Ryhmäerot äidin koulutuksen mukaisesti
+- Malli post1:
+
 ```{r, echo = FALSE}
 base <- ggplot(kidiq, aes(x = mom_hs, y = kid_score)) + 
   geom_point(size = 1, position = position_jitter(height = 0.05, width = 0.1)) + 
@@ -374,7 +444,14 @@ base + geom_abline(intercept = coef(post1)[1], slope = coef(post1)[2],
                    color = "skyblue4", size = 1)
 ```
 
-## Esimerkki
+
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Ryhmäerojen posteriori-varianssia voidaan havainnollistaa generoimalla posteriorijakaumasta
+- Malli post1:
+
 ```{r, echo = FALSE}
 draws <- as.data.frame(post1)
 colnames(draws)[1:2] <- c("a", "b")
@@ -386,7 +463,14 @@ base +
               color = "skyblue4", size = 1)
 ```
 
-## Esimerkki 2
+
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Posteriorisovitteen vaihtelu
+- Malli post2:
+
 ```{r, echo = FALSE}
 draws <- as.data.frame(as.matrix(post2))
 colnames(draws)[1:2] <- c("a", "b")
@@ -398,7 +482,13 @@ ggplot(kidiq, aes(x = mom_iq, y = kid_score)) +
               color = "skyblue4", size = 1)
 ```
 
-## Esimerkki 3
+
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+
+
 ```{r, echo = FALSE}
 reg0 <- function(x, ests) cbind(1, 0, x) %*% ests 
 reg1 <- function(x, ests) cbind(1, 1, x) %*% ests
@@ -415,7 +505,10 @@ base2 +
   stat_function(fun = reg1, args = args, aes(color = "HS"), size = 1.5)
 ```
 
-## Esimerkki 4
+
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
 ```{r, echo = FALSE}
 reg0 <- function(x, ests) cbind(1, 0, x, 0 * x) %*% ests 
 reg1 <- function(x, ests) cbind(1, 1, x, 1 * x) %*% ests
@@ -425,51 +518,80 @@ base2 +
   stat_function(fun = reg1, args = args, aes(color = "HS"), size = 1.5)
 ```
 
-## Esimerkki
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Posteriorijakauman sovittamisen jälkeen kannattaa tarkastella havaintoaineiston jakaumaa, sekä posterioriprediktiivisestä jakaumasta generoitujen havaintoaineistojen jakaumia
+- Malli post4:
+
+```{r}
+color_scheme_set("red")
+ppc_dens_overlay(y = post4$y,
+                 yrep = posterior_predict(post4, draws = 50))
+```
+
+
+
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Posteriorijakauman sovittamisen jälkeen kannattaa tarkastella havaintoaineiston jakaumaa, sekä posterioriprediktiivisestä jakaumasta generoitujen havaintoaineistojen jakaumia
+- Malli post4:
+
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
 pp_check(post4, plotfun = "hist", nreps = 5)
 ```
 
-## Esimerkki
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Havaintoaineistosta lasketun tunnusluvun jakauma verrattuna posterioriprediktiivisiin tunnuslukuihin
+
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
 pp_check(post4, plotfun = "stat", stat = "mean")
 ```
 
-## Esimerkki
-```{r}
-loo1 <- loo(post1)
-loo2 <- loo(post2)
-loo3 <- loo(post3)
-loo4 <- loo(post4)
-(comp <- compare_models(loo1, loo2, loo3, loo4))
-```
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
 
-## Esimerkki
-```{r}
-compare_models(loo1, loo4)
-```
+- Havaintoaineistosta laskettujen tunnuslukujen jakauma verrattuna posterioriprediktiivisiin tunnuslukuihin
 
-## Esimerkki
-```{r}
-compare_models(loo3, loo4)
-compare_models(loo2, loo4)
-```
-
-
-## Esimerkki
 ```{r, echo = FALSE}
 pp_check(post4, plotfun = "stat_2d", stat = c("mean", "sd"))
 ```
 
-## Esimerkki
-```{r, echo=FALSE}
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Mallien vertailu kannattaa suorittaa leave-one-out-ristiinvalidoinnilla
+
+```{r, echo=TRUE}
+loo1 <- loo(post1); loo2 <- loo(post2); loo3 <- loo(post3); loo4 <- loo(post4)
+(comp <- compare_models(loo1, loo2, loo3, loo4))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+## rstanarm-esimerkki: Älykkyysosamäärän periytyminen
+
+- Posterioriprediktiiviset jakaumat ryhmittäin perustuen parhaiten havaintoaineistoon sopivaan malliin
+
+```{r, echo = FALSE}
 IQ_SEQ <- seq(from = 75, to = 135, by = 5)
 y_nohs <- posterior_predict(post4, newdata = data.frame(mom_hs = 0, mom_iq = IQ_SEQ))
 y_hs <- posterior_predict(post4, newdata = data.frame(mom_hs = 1, mom_iq = IQ_SEQ))
-```
 
-## Esimerkki
-```{r, echo = FALSE}
 par(mfrow = c(1:2), mar = c(5,4,2,1))
 boxplot(y_hs, axes = FALSE, outline = FALSE, ylim = c(10,170),
         xlab = "Mom IQ", ylab = "Predicted Kid IQ", main = "Mom HS")
@@ -482,124 +604,164 @@ axis(1, at = 1:ncol(y_hs), labels = IQ_SEQ, las = 3)
 
 
 
-## Esimerkki
-```{r, echo = FALSE}
-clotting <- data.frame(
-    u = c(5,10,15,20,30,40,60,80,100),
-    lot1 = c(118,58,42,35,27,25,21,19,18),
-    lot2 = c(69,35,26,21,18,16,13,12,12))
-summary(glm(lot1 ~ log(u), data = clotting, family = Gamma))
-summary(glm(lot2 ~ log(u), data = clotting, family = Gamma))
-```
-## Esimerkki
-```{r, echo = FALSE}
-clotting2 <- with(clotting, data.frame(
-  log_plasma = rep(log(u), 2),
-  clot_time = c(lot1, lot2),
-  lot_id = factor(rep(c(1,2), each = length(u)))
-))
-
-fit <- stan_glm(clot_time ~ log_plasma * lot_id, data = clotting2, family = Gamma, 
-                prior_intercept = normal(0,1), prior = normal(0,1))
-```
-## Esimerkki
-```{r}
-print(fit, digits = 3)
-# plot(fit)
-```
-
-## Esimerkki
-```{r, echo = FALSE}
-posterior <- as.matrix(fit)
-
-plot_title <- ggtitle("Posterior distributions",
-                      "with medians and 80% intervals")
-mcmc_areas(posterior, pars=c("log_plasma","shape"),
-           prob = 0.8) + plot_title
-
-```
-
-## Slide with R Output
-
-```{r, echo = FALSE}
-data(wells)
-wells$dist100 <- wells$dist / 100
-```
-
-## Esimerkki
-```{r, echo = FALSE}
-wells <- wells %>% mutate(switchf=as.factor(switch))
-wells  %>% ggplot(aes(x = dist100, y = ..density.., fill = switchf)) +
-  geom_histogram() + 
-  scale_fill_manual(values = c("gray30", "skyblue"))
-```
-
-## Esimerkki
-```{r, echo = FALSE}
-t_prior <- student_t(df = 7, location = 0, scale = 2.5)
-fit1 <- stan_glm(switchf ~ dist100, data = wells, 
-                 family = binomial(link = "logit"), 
-                 prior = t_prior, prior_intercept = t_prior)
-```
-
-## Esimerkki
-```{r, echo = FALSE}
-# Predicted probability as a function of x
-pr_switch <- function(x, ests) plogis(ests[1] + ests[2] * x)
-# A function to slightly jitter the binary data
-jitt <- function(...) {
-  geom_point(aes_string(...), position = position_jitter(height = 0.05, width = 0.1), 
-             size = 2, shape = 21, stroke = 0.2)
-}
-ggplot(wells, aes(x = dist100, y = switch, color = switchf)) + 
-  scale_y_continuous(breaks = c(0, 0.5, 1)) +
-  jitt(x="dist100") + 
-  stat_function(fun = pr_switch, args = list(ests = coef(fit1)), 
-                size = 2, color = "gray35")
-```
 
 
-## Esimerkki
-```{r, echo = FALSE}
-fit2 <- update(fit1, formula = switchf ~ dist100 + arsenic) 
-(coef_fit2 <- round(coef(fit2), 3))
-```
 
-## Esimerkki
-```{r, echo = FALSE}
-pr_switch2 <- function(x, y, ests) plogis(ests[1] + ests[2] * x + ests[3] * y)
-grid <- expand.grid(dist100 = seq(0, 4, length.out = 100), 
-                    arsenic = seq(0, 10, length.out = 100))
-grid$prob <- with(grid, pr_switch2(dist100, arsenic, coef(fit2)))
-ggplot(grid, aes(x = dist100, y = arsenic)) + 
-  geom_tile(aes(fill = prob)) + 
-  geom_point(data = wells, aes(color = switchf), size = 2, alpha = 0.85) + 
-  scale_fill_gradient() +
-  scale_color_manual("switch", values = c("white", "black"), labels = c("No", "Yes"))
-```
 
-## Esimerkki
-```{r, echo = FALSE}
-if (require(gridExtra)) {
-  # Quantiles
-  q_ars <- quantile(wells$dist100, seq(0, 1, 0.25))
-  q_dist <- quantile(wells$arsenic, seq(0, 1, 0.25))  
-  base <- ggplot(wells) + xlim(c(0, NA)) +
-    scale_y_continuous(breaks = c(0, 0.5, 1))
-  vary_arsenic <- base + jitt(x="arsenic", y="switch", color="switchf")
-  vary_dist <- base + jitt(x="dist100", y="switch", color="switchf")
-  for (i in 1:5) {
-    vary_dist <- 
-      vary_dist + stat_function(fun = pr_switch2, color = "gray35", 
-                                args = list(ests = coef(fit2), y = q_dist[i]))
-    vary_arsenic <-
-      vary_arsenic + stat_function(fun = pr_switch2, color = "gray35", 
-                                   args = list(ests = coef(fit2), x = q_ars[i]))
-  }
-  grid.arrange(vary_dist, vary_arsenic, ncol = 2)
-}
 
-```
+
+
+
+
+
+
+
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r, echo = FALSE} -->
+<!-- clotting <- data.frame( -->
+<!--     u = c(5,10,15,20,30,40,60,80,100), -->
+<!--     lot1 = c(118,58,42,35,27,25,21,19,18), -->
+<!--     lot2 = c(69,35,26,21,18,16,13,12,12)) -->
+<!-- summary(glm(lot1 ~ log(u), data = clotting, family = Gamma)) -->
+<!-- summary(glm(lot2 ~ log(u), data = clotting, family = Gamma)) -->
+<!-- ``` -->
+
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r, echo = FALSE} -->
+<!-- clotting2 <- with(clotting, data.frame( -->
+<!--   log_plasma = rep(log(u), 2), -->
+<!--   clot_time = c(lot1, lot2), -->
+<!--   lot_id = factor(rep(c(1,2), each = length(u))) -->
+<!-- )) -->
+
+<!-- fit <- stan_glm(clot_time ~ log_plasma * lot_id, data = clotting2, family = Gamma,  -->
+<!--                 prior_intercept = normal(0,1), prior = normal(0,1)) -->
+<!-- ``` -->
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r} -->
+<!-- print(fit, digits = 3) -->
+<!-- # plot(fit) -->
+<!-- ``` -->
+
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r, echo = FALSE} -->
+<!-- posterior <- as.matrix(fit) -->
+
+<!-- plot_title <- ggtitle("Posterior distributions", -->
+<!--                       "with medians and 80% intervals") -->
+<!-- mcmc_areas(posterior, pars=c("log_plasma","shape"), -->
+<!--            prob = 0.8) + plot_title -->
+
+<!-- ``` -->
+
+
+
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r, echo = FALSE, message = FALSE, warning=FALSE} -->
+<!-- data(wells) -->
+<!-- wells$dist100 <- wells$dist / 100 -->
+<!-- wells <- wells %>% mutate(switchf=as.factor(switch)) -->
+<!-- wells  %>% ggplot(aes(x = dist100, y = ..density.., fill = switchf)) + -->
+<!--   geom_histogram() +  -->
+<!--   scale_fill_manual(values = c("gray30", "skyblue")) -->
+<!-- ``` -->
+
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r, echo = FALSE} -->
+<!-- t_prior <- student_t(df = 7, location = 0, scale = 2.5) -->
+<!-- fit1 <- stan_glm(switchf ~ dist100, data = wells,  -->
+<!--                  family = binomial(link = "logit"),  -->
+<!--                  prior = t_prior, prior_intercept = t_prior) -->
+<!-- ``` -->
+
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r, echo = FALSE} -->
+<!-- # Predicted probability as a function of x -->
+<!-- pr_switch <- function(x, ests) plogis(ests[1] + ests[2] * x) -->
+<!-- # A function to slightly jitter the binary data -->
+<!-- jitt <- function(...) { -->
+<!--   geom_point(aes_string(...), position = position_jitter(height = 0.05, width = 0.1),  -->
+<!--              size = 2, shape = 21, stroke = 0.2) -->
+<!-- } -->
+<!-- ggplot(wells, aes(x = dist100, y = switch, color = switchf)) +  -->
+<!--   scale_y_continuous(breaks = c(0, 0.5, 1)) + -->
+<!--   jitt(x="dist100") +  -->
+<!--   stat_function(fun = pr_switch, args = list(ests = coef(fit1)),  -->
+<!--                 size = 2, color = "gray35") -->
+<!-- ``` -->
+
+
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r, echo = FALSE} -->
+<!-- fit2 <- update(fit1, formula = switchf ~ dist100 + arsenic)  -->
+<!-- (coef_fit2 <- round(coef(fit2), 3)) -->
+<!-- ``` -->
+
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r, echo = FALSE} -->
+<!-- pr_switch2 <- function(x, y, ests) plogis(ests[1] + ests[2] * x + ests[3] * y) -->
+<!-- grid <- expand.grid(dist100 = seq(0, 4, length.out = 100),  -->
+<!--                     arsenic = seq(0, 10, length.out = 100)) -->
+<!-- grid$prob <- with(grid, pr_switch2(dist100, arsenic, coef(fit2))) -->
+<!-- ggplot(grid, aes(x = dist100, y = arsenic)) +  -->
+<!--   geom_tile(aes(fill = prob)) +  -->
+<!--   geom_point(data = wells, aes(color = switchf), size = 2, alpha = 0.85) +  -->
+<!--   scale_fill_gradient() + -->
+<!--   scale_color_manual("switch", values = c("white", "black"), labels = c("No", "Yes")) -->
+<!-- ``` -->
+
+
+
+
+<!-- ## Esimerkki -->
+<!-- ```{r, echo = FALSE, message = FALSE, warning=FALSE} -->
+<!-- if (require(gridExtra)) { -->
+<!--   # Quantiles -->
+<!--   q_ars <- quantile(wells$dist100, seq(0, 1, 0.25)) -->
+<!--   q_dist <- quantile(wells$arsenic, seq(0, 1, 0.25))   -->
+<!--   base <- ggplot(wells) + xlim(c(0, NA)) + -->
+<!--     scale_y_continuous(breaks = c(0, 0.5, 1)) -->
+<!--   vary_arsenic <- base + jitt(x="arsenic", y="switch", color="switchf") -->
+<!--   vary_dist <- base + jitt(x="dist100", y="switch", color="switchf") -->
+<!--   for (i in 1:5) { -->
+<!--     vary_dist <-  -->
+<!--       vary_dist + stat_function(fun = pr_switch2, color = "gray35",  -->
+<!--                                 args = list(ests = coef(fit2), y = q_dist[i])) -->
+<!--     vary_arsenic <- -->
+<!--       vary_arsenic + stat_function(fun = pr_switch2, color = "gray35",  -->
+<!--                                    args = list(ests = coef(fit2), x = q_ars[i])) -->
+<!--   } -->
+<!--   grid.arrange(vary_dist, vary_arsenic, ncol = 2) -->
+<!-- } -->
+
+<!-- ``` -->
 
 
 
